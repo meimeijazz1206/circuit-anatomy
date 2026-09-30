@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B 日系雜誌 — 賽道解剖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF; --ink:#111214; --soft:#6E7076; --rule:#111214; --hair:#E3E3E0;
+    --cobalt:#1F3BFF; --vermilion:#FF4B1F;
+    --serif:"Noto Serif TC","Hiragino Mincho ProN",serif;
+    --num:"Instrument Serif",Georgia,serif;
+    --sans:"Inter","Noto Sans TC",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       -webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .page{max-width:1320px;margin:0 auto;padding:0 56px}
+
+  /* ---------- 報頭 ---------- */
+  .mast{display:flex;justify-content:space-between;align-items:flex-end;
+        padding:30px 0 12px;border-bottom:2px solid var(--rule);
+        font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+  .mast b{font-weight:600}
+  .mast span{color:var(--soft)}
+
+  /* ---------- 封面：左邊特集、右邊直排刊名 ---------- */
+  .cover{display:grid;grid-template-columns:1fr 150px;gap:48px;padding:44px 0 56px;
+         border-bottom:1px solid var(--hair)}
+  .vtitle{writing-mode:vertical-rl;font-family:var(--serif);font-weight:900;
+          font-size:128px;line-height:1;letter-spacing:.06em;color:var(--cobalt);
+          justify-self:end;position:relative}
+  .vtitle small{font-family:var(--num);font-style:italic;font-weight:400;font-size:30px;
+                letter-spacing:.02em;color:var(--ink);margin-top:18px;writing-mode:horizontal-tb;
+                display:block;text-align:center}
+
+  .feature{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center}
+  .kicker{font-size:11px;letter-spacing:.24em;color:var(--vermilion);font-weight:600}
+  .feature h1{font-family:var(--serif);font-weight:900;font-size:76px;line-height:1.05;
+              margin-top:10px;letter-spacing:.01em}
+  .feature h1 i{display:block;font-family:var(--serif);font-weight:500;font-style:normal;
+                font-size:.34em;color:var(--cobalt);margin-top:10px;letter-spacing:.12em}
+  .lede{font-family:var(--serif);font-size:19px;line-height:1.9;margin-top:22px;max-width:30em}
+  .figures{display:flex;gap:34px;margin-top:30px;padding-top:18px;border-top:1px solid var(--rule)}
+  .fig b{font-family:var(--num);font-weight:400;font-size:62px;line-height:1;letter-spacing:-.01em}
+  .fig b sup{font-family:var(--sans);font-size:12px;letter-spacing:.1em;margin-left:3px;
+             vertical-align:top;position:relative;top:10px}
+  .fig span{display:block;font-size:11.5px;color:var(--soft);margin-top:6px;letter-spacing:.06em}
+  .read{display:inline-flex;gap:10px;align-items:center;margin-top:30px;font-size:13px;
+        font-weight:600;letter-spacing:.12em;border-bottom:2px solid var(--cobalt);padding-bottom:4px}
+  .read:hover{color:var(--cobalt)}
+
+  .plate{position:relative;aspect-ratio:1;background:#F4F5FF}
+  .plate svg{position:absolute;inset:6%;width:88%;height:88%}
+  .plate path{fill:none;stroke:var(--cobalt);stroke-width:4.2;stroke-linejoin:round}
+  .plate circle{fill:var(--vermilion)}
+  .plate text{font-family:var(--sans);font-size:2.6px;letter-spacing:.2em;fill:var(--vermilion);
+              font-weight:600}
+  .plate .no{position:absolute;left:18px;top:12px;font-family:var(--num);font-style:italic;
+             font-size:24px;color:var(--cobalt)}
+  .plate .cap{position:absolute;left:18px;bottom:14px;font-size:11px;letter-spacing:.14em;
+              color:var(--soft)}
+
+  /* ---------- 下一站：整條撞色帶 ---------- */
+  .next{background:var(--vermilion);color:#fff;margin:0 -56px;padding:26px 56px;
+        display:flex;align-items:baseline;gap:28px;flex-wrap:wrap}
+  .next small{font-size:11px;letter-spacing:.26em;font-weight:600}
+  .next strong{font-family:var(--serif);font-weight:900;font-size:40px}
+  .next span{font-family:var(--num);font-style:italic;font-size:30px}
+  .next em{font-style:normal;margin-left:auto;font-size:12px;letter-spacing:.16em;
+           border:1px solid rgba(255,255,255,.7);padding:6px 12px}
+
+  /* ---------- 第二特集 ---------- */
+  .second{display:grid;grid-template-columns:220px 1fr auto;gap:40px;align-items:center;
+          padding:44px 0;border-bottom:1px solid var(--hair)}
+  .second .plate{background:#FFF3EE}
+  .second .plate path{stroke:var(--vermilion);stroke-width:5}
+  .second h3{font-family:var(--serif);font-weight:900;font-size:42px;line-height:1.1;margin-top:8px}
+  .second p{font-family:var(--serif);font-size:16px;line-height:1.85;margin-top:12px;max-width:34em}
+  .second .big{font-family:var(--num);font-size:120px;line-height:.85;color:var(--vermilion)}
+  .second .big sup{font-size:.3em;vertical-align:top}
+  .second .big span{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.14em;
+                    color:var(--soft);margin-top:8px;text-align:right}
+
+  /* ---------- 目次 ---------- */
+  .toc{padding:64px 0 90px;display:grid;grid-template-columns:220px 1fr;gap:48px}
+  .toc h2{font-family:var(--serif);font-weight:900;font-size:56px;line-height:1}
+  .toc h2 small{display:block;font-family:var(--num);font-style:italic;font-weight:400;
+                font-size:26px;color:var(--soft);margin-top:10px}
+  .toc h2 + p{font-size:13px;line-height:1.8;color:var(--soft);margin-top:18px}
+  .list{columns:2;column-gap:56px}
+  .item{break-inside:avoid;display:grid;grid-template-columns:58px 1fr auto;align-items:baseline;
+        gap:12px;padding:13px 0;border-bottom:1px solid var(--hair)}
+  .item .n{font-family:var(--num);font-size:32px;line-height:1;color:var(--cobalt)}
+  .item .t b{font-family:var(--serif);font-weight:700;font-size:17px}
+  .item .t span{display:block;font-size:11.5px;color:var(--soft);margin-top:3px;letter-spacing:.03em}
+  .item .d{font-family:var(--num);font-style:italic;font-size:19px;color:var(--soft)}
+  .item.done .n{color:#B9BBC2}
+  .item.done .t b{color:#8A8C93}
+  .item.live{position:relative}
+  .item.live .t b{color:var(--ink);border-bottom:2px solid var(--cobalt)}
+  .item.live .d::after{content:"  閱讀 →";font-family:var(--sans);font-style:normal;font-size:11px;
+                       letter-spacing:.12em;color:var(--cobalt);font-weight:600}
+  .item.live .n{color:var(--cobalt)}
+  .item.next .n,.item.next .d{color:var(--vermilion)}
+  .item.next .t b::after{content:"NEXT";font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;
+                         color:#fff;background:var(--vermilion);padding:2px 6px;margin-left:8px;
+                         vertical-align:2px}
+
+  footer{border-top:2px solid var(--rule);padding:16px 0 40px;font-size:11px;color:var(--soft);
+         line-height:1.7}
+
+  @media(max-width:960px){
+    .page{padding:0 22px}
+    .cover{grid-template-columns:1fr;gap:20px}
+    .vtitle{writing-mode:horizontal-tb;font-size:64px;justify-self:start;order:-1}
+    .vtitle small{display:inline;margin-left:12px}
+    .feature,.second,.toc{grid-template-columns:1fr}
+    .feature h1{font-size:48px}
+    .list{columns:1}
+    .next{margin:0 -22px;padding:22px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="mast">
+    <b>Circuit Anatomy</b>
+    <span id="mast-mid">2026 Season</span>
+    <span id="mast-r"></span>
+  </header>
+
+  <section class="cover">
+    <div class="feature" id="feature"></div>
+    <div class="vtitle">賽道解剖<small>2026</small></div>
+  </section>
+
+  <a class="next" id="next"></a>
+
+  <section class="second" id="second"></section>
+
+  <section class="toc">
+    <div>
+      <h2>目次<small>Contents</small></h2>
+      <p>整季 23 站。藍色底線的是已經收錄、可以翻開來看的賽道。</p>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <footer>賽程來源 formula1.com。賽道輪廓取自 OpenStreetMap。本站不使用任何賽事、車隊或車手的商標與影像。</footer>
+</div>
+
+<script type="module">
+import { rounds, built, next, doneCount, OUTLINES, METAS, LEDE, STATS, startPoint } from './shared.js';
+
+document.getElementById('mast-r').textContent = `Issue ${doneCount} / 23`;
+
+function plate(r, label) {
+  const [sx, sy] = startPoint(OUTLINES[r.track]);
+  return `<div class="plate">
+    <span class="no">R${r.no}</span>
+    <svg viewBox="0 0 100 100"><path d="${OUTLINES[r.track]}"/>
+      <circle cx="${sx}" cy="${sy}" r="1.6"/>
+      <text x="${sx + 3}" y="${sy - 2.5}">START</text></svg>
+    ${label ? `<span class="cap">${label}</span>` : ''}
+  </div>`;
+}
+
+// 封面特集：第一條建好的賽道
+const f = built[0];
+const fm = METAS[f.track];
+document.getElementById('feature').innerHTML = `
+  ${plate(f, `${fm.place} ・ OpenStreetMap`)}
+  <div>
+    <div class="kicker">特集 01 ・ ${f.flag} ${f.gp}</div>
+    <h1>${fm.title}<i>${fm.tagline}</i></h1>
+    <p class="lede">${LEDE[f.track]}</p>
+    <div class="figures">${STATS[f.track].map(([v, u, k]) =>
+      `<div class="fig"><b>${v}<sup>${u}</sup></b><span>${k}</span></div>`).join('')}</div>
+    <a class="read" href="../${f.track}.html">翻開這一站 →</a>
+  </div>`;
+
+// 下一站
+const nx = document.getElementById('next');
+nx.innerHTML = `<small>下一站 NEXT ・ R${next.no}</small>
+  <strong>${next.flag} ${next.gp}</strong><span>${next.circuit}, ${next.dot}</span>
+  <em>${next.live ? '翻開 →' : '收錄中'}</em>`;
+if (next.live) nx.href = `../${next.track}.html`;
+
+// 第二特集
+const s = built[1];
+if (s) {
+  const sm = METAS[s.track];
+  const [v, u, k] = STATS[s.track][1];
+  document.getElementById('second').innerHTML = `
+    ${plate(s)}
+    <div>
+      <div class="kicker">特集 02 ・ ${s.flag} ${s.gp}</div>
+      <h3>${sm.title}　${sm.tagline}</h3>
+      <p>${LEDE[s.track]}</p>
+      <a class="read" href="../${s.track}.html">翻開這一站 →</a>
+    </div>
+    <div class="big">${v}<sup>${u}</sup><span>${k}</span></div>`;
+}
+
+// 目次
+document.getElementById('list').innerHTML = rounds.map(r => {
+  const cls = ['item', r.done ? 'done' : '', r.live ? 'live' : '', r.isNext ? 'next' : ''].join(' ');
+  const tag = r.live ? 'a' : 'div';
+  const href = r.live ? ` href="../${r.track}.html"` : '';
+  return `<${tag}${href} class="${cls}">
+    <span class="n">${r.no}</span>
+    <span class="t"><b>${r.flag} ${r.gp}</b><span>${r.circuit}</span></span>
+    <span class="d">${r.dot}</span>
+  </${tag}>`;
+}).join('');
+</script>
+</body>
+</html>

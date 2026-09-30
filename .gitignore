@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+# 舊版遺留檔，沒有任何頁面引用
+home.js
+home.css
+corners.js
+track_data.js

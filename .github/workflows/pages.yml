@@ -1,0 +1,42 @@
+# 發布網站到 GitHub Pages。推送到 main 或每日更新完成後觸發。
+# 只發布網頁需要的檔案；資料管線（data/、*.py、drafts/）不上線。
+name: 發布網站
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 組出網站
+        run: |
+          mkdir _site
+          cp *.html *.css *.js _site/
+          cp -r tracks vendor _site/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

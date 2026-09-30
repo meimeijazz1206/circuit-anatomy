@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>首頁三個方向 — 賽道解剖</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#EDEDEA;color:#141414;font-family:"Helvetica Neue","Noto Sans TC",sans-serif;
+       padding:36px 32px 60px;-webkit-font-smoothing:antialiased}
+  h1{font-size:22px;font-weight:700}
+  .sub{font-size:13px;color:#666;margin-top:6px}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
+  .col{background:#fff;border:1px solid #D8D8D4}
+  .frame{position:relative;width:100%;aspect-ratio:16/11;overflow:hidden;background:#000}
+  /* 用 1440×990 的真實尺寸渲染，再縮小，才看得出真正的版面 */
+  .frame iframe{position:absolute;top:0;left:0;width:1440px;height:990px;border:0;
+                transform-origin:0 0;pointer-events:none}
+  .info{padding:16px 18px 18px}
+  .info h2{font-size:17px}
+  .info h2 span{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;
+                background:#141414;color:#fff;font-size:13px;margin-right:8px;border-radius:2px}
+  .info dl{margin-top:12px;font-size:12.5px;line-height:1.7}
+  .info dt{font-weight:700;margin-top:8px}
+  .info dd{color:#444}
+  .info a{display:inline-block;margin-top:14px;font-size:12px;font-weight:700;letter-spacing:.06em;
+          border-bottom:2px solid #141414;padding-bottom:2px;color:inherit;text-decoration:none}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>首頁三個方向</h1>
+<p class="sub">都是真實資料（今天的賽程進度、下一站倒數、已建好的兩條賽道）。點「開啟完整版」可以捲動看全頁。</p>
+
+<div class="cols">
+  <div class="col">
+    <div class="frame"><iframe src="a-poster.html" loading="lazy"></iframe></div>
+    <div class="info">
+      <h2><span>A</span>賽車海報</h2>
+      <dl>
+        <dt>感覺</dt><dd>紅底、超大斜體字、白色賽道輪廓、黑黃貼紙。像 80 年代的賽事海報。</dd>
+        <dt>最強的地方</dt><dd>最有活力，第一眼就知道是賽車。已建好的賽道整列翻成黃色，是頁面上唯一會亮的東西。</dd>
+        <dt>風險</dt><dd>資訊密度低，看久了累。賽道頁如果不跟著改，點進去會有斷層感。</dd>
+      </dl>
+      <a href="a-poster.html" target="_blank">開啟完整版 →</a>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="frame"><iframe src="b-editorial.html" loading="lazy"></iframe></div>
+    <div class="info">
+      <h2><span>B</span>日系雜誌</h2>
+      <dl>
+        <dt>感覺</dt><dd>純白底、直排刊名、鈷藍＋朱紅撞色、襯線大數字。每條賽道是一期「特集」，賽程是「目次」。</dd>
+        <dt>最強的地方</dt><dd>最符合你的日系編輯感與空間感，而且最適合「解剖」這個主題——有故事、有導言。</dd>
+        <dt>風險</dt><dd>容易變太安靜。撞色要一直撐著，只要少一個顏色就會退回「有品味的預設樣式」。</dd>
+      </dl>
+      <a href="b-editorial.html" target="_blank">開啟完整版 →</a>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="frame"><iframe src="c-timing.html" loading="lazy"></iframe></div>
+    <div class="info">
+      <h2><span>C</span>計時塔</h2>
+      <dl>
+        <dt>感覺</dt><dd>深色底、螢光綠＋桃紅、等寬數字。左邊是 F1 轉播那種計時塔，右上是下一站即時倒數。</dd>
+        <dt>最強的地方</dt><dd>最像產品，倒數會一直跳，有「現在正在進行」的感覺，回訪理由最強。</dd>
+        <dt>風險</dt><dd>深色底——三個裡最接近你說不喜歡的暗沉。螢光撐得住對比，但整體調子是暗的。</dd>
+      </dl>
+      <a href="c-timing.html" target="_blank">開啟完整版 →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // iframe 依欄寬等比縮小
+  function fit() {
+    document.querySelectorAll('.frame').forEach(f => {
+      f.querySelector('iframe').style.transform = `scale(${f.clientWidth / 1440})`;
+    });
+  }
+  addEventListener('resize', fit);
+  fit();
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+{
+ "albert_park": {
+  "official_m": 5278,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 26,
+  "relations": [
+   "Albert Park Circuit"
+  ],
+  "street": true
+ },
+ "shanghai": {
+  "official_m": 5451,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 17,
+  "relations": [
+   "Shanghai International Circuit"
+  ],
+  "street": false
+ },
+ "miami": {
+  "official_m": 5412,
+  "best_m": 5412.4,
+  "diff_pct": 0.01,
+  "ways": 10,
+  "relations": [],
+  "street": true
+ },
+ "villeneuve": {
+  "official_m": 4361,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 1,
+  "relations": [
+   "Circuit Gilles Villeneuve"
+  ],
+  "street": true
+ },
+ "monaco": {
+  "official_m": 3337,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 38,
+  "relations": [
+   "Circuit de Monaco",
+   "Monaco ePrix"
+  ],
+  "street": true
+ },
+ "catalunya": {
+  "official_m": 4657,
+  "best_m": 4658.1,
+  "diff_pct": 0.02,
+  "ways": 41,
+  "relations": [
+   "Circuit de Catalunya GP",
+   "Circuit de Catalunya GP",
+   "World RX of Barcelona",
+   "Circuit de Catalunya MotoGP"
+  ],
+  "street": false
+ },
+ "red_bull_ring": {
+  "official_m": 4318,
+  "best_m": 4300.5,
+  "diff_pct": -0.4,
+  "ways": 36,
+  "relations": [
+   "Red Bull Ring"
+  ],
+  "street": false
+ },
+ "silverstone": {
+  "official_m": 5891,
+  "best_m": 1737.3,
+  "diff_pct": -70.51,
+  "ways": 90,
+  "relations": [
+   "Silverstone Grand Prix",
+   "Silverstone International",
+   "Stowe Circuit"
+  ],
+  "street": false
+ },
+ "spa": {
+  "official_m": 7004,
+  "best_m": 6987.3,
+  "diff_pct": -0.24,
+  "ways": 31,
+  "relations": [
+   "Circuit de Spa Francorchamps"
+  ],
+  "street": false
+ },
+ "hungaroring": {
+  "official_m": 4381,
+  "best_m": 4363.6,
+  "diff_pct": -0.4,
+  "ways": 10,
+  "relations": [
+   "Hungaroring"
+  ],
+  "street": false
+ },
+ "zandvoort": {
+  "official_m": 4259,
+  "best_m": 4251.3,
+  "diff_pct": -0.18,
+  "ways": 27,
+  "relations": [
+   "Grand Prix Formule 1 van Nederland"
+  ],
+  "street": false
+ },
+ "madring": {
+  "official_m": 5474,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 7,
+  "relations": [],
+  "street": true
+ },
+ "baku": {
+  "official_m": 6003,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 48,
+  "relations": [
+   "Baku City Circuit"
+  ],
+  "street": true
+ },
+ "marina_bay": {
+  "official_m": 4940,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 93,
+  "relations": [
+   "Marina Bay Street Circuit"
+  ],
+  "street": true
+ },
+ "americas": {
+  "official_m": 5513,
+  "best_m": 5501.7,
+  "diff_pct": -0.21,
+  "ways": 34,
+  "relations": [
+   "Circuit of the Americas",
+   null
+  ],
+  "street": false
+ },
+ "rodriguez": {
+  "official_m": 4304,
+  "best_m": 4311.1,
+  "diff_pct": 0.17,
+  "ways": 21,
+  "relations": [
+   "Mexico City E-Prix",
+   "Mexican Grand Prix"
+  ],
+  "street": false
+ },
+ "interlagos": {
+  "official_m": 4309,
+  "best_m": 4303.6,
+  "diff_pct": -0.13,
+  "ways": 43,
+  "relations": [
+   "Autódromo José Carlos Pace"
+  ],
+  "street": false
+ },
+ "vegas": {
+  "official_m": 6201,
+  "best_m": null,
+  "diff_pct": null,
+  "ways": 78,
+  "relations": [
+   "Las Vegas Strip Circuit"
+  ],
+  "street": true
+ },
+ "losail": {
+  "official_m": 5419,
+  "best_m": 5422.5,
+  "diff_pct": 0.06,
+  "ways": 7,
+  "relations": [
+   "Lusail Grand Prix Circuit"
+  ],
+  "street": false
+ },
+ "yas_marina": {
+  "official_m": 5281,
+  "best_m": 5293.1,
+  "diff_pct": 0.23,
+  "ways": 30,
+  "relations": [
+   "Yas Marina Circuit",
+   "Grand Prix Corkscrew Circuit"
+  ],
+  "street": false
+ }
+}

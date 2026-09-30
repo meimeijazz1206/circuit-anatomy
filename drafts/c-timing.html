@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C 計時塔 — 賽道解剖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0B0D; --panel:#121418; --line:#23262D; --text:#ECEDEF; --dim:#6D717B;
+    --lime:#D4FF00; --pink:#FF2E88; --cyan:#27E1FF;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+    --disp:"Chakra Petch","Noto Sans TC",sans-serif;
+    --sans:"Noto Sans TC",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);
+       -webkit-font-smoothing:antialiased;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  /* 極淡的掃描線，像場邊螢幕 */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
+
+  /* ---------- 頂列 ---------- */
+  .top{display:flex;align-items:center;gap:22px;padding:14px 28px;border-bottom:1px solid var(--line);
+       font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+  .logo{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.14em}
+  .logo i{font-style:normal;color:var(--lime)}
+  .live{display:flex;align-items:center;gap:7px;color:var(--lime)}
+  .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);
+                box-shadow:0 0 8px var(--lime);animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  .top .sp{flex:1}
+  .top .clk{color:var(--dim)}
+
+  .wrap{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 49px)}
+
+  /* ---------- 左：計時塔 ---------- */
+  .tower{border-right:1px solid var(--line);padding:18px 0}
+  .tower h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim);
+            padding:0 20px 12px;display:flex;justify-content:space-between}
+  .tr{display:grid;grid-template-columns:44px 4px 52px 1fr auto;align-items:center;gap:10px;
+      height:34px;padding:0 20px;font-family:var(--mono);font-size:13px;
+      border-top:1px solid #15171B}
+  .tr .p{color:var(--dim)}
+  .tr .bar{height:18px;background:#2A2D34}
+  .tr .c{font-weight:700;letter-spacing:.06em}
+  .tr .n{font-family:var(--sans);font-size:12.5px;color:#B5B8C0;white-space:nowrap;overflow:hidden;
+         text-overflow:ellipsis}
+  .tr .s{font-size:11px;letter-spacing:.1em;color:var(--dim)}
+  .tr.done .c,.tr.done .n{color:#5A5E67}
+  .tr.open .bar{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+  .tr.open .c{color:var(--lime)}
+  .tr.open .n{color:var(--text)}
+  .tr.open .s{color:var(--lime)}
+  .tr.open:hover{background:rgba(212,255,0,.08)}
+  .tr.next{background:rgba(255,46,136,.13)}
+  .tr.next .bar{background:var(--pink);box-shadow:0 0 10px var(--pink)}
+  .tr.next .c,.tr.next .s{color:var(--pink)}
+  .tr.next .n{color:var(--text)}
+
+  /* ---------- 右：倒數與賽道資料 ---------- */
+  .main{padding:34px 40px 50px;display:flex;flex-direction:column;gap:34px}
+  .count .k{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--pink)}
+  .count h1{font-family:var(--disp);font-weight:700;font-size:54px;letter-spacing:.02em;margin-top:6px;
+            line-height:1.05}
+  .count h1 small{font-family:var(--sans);font-weight:700;font-size:22px;color:var(--dim);margin-left:14px}
+  .digits{display:flex;gap:10px;margin-top:22px}
+  .dg{background:var(--panel);border:1px solid var(--line);padding:14px 18px 10px;min-width:118px}
+  .dg b{display:block;font-family:var(--mono);font-weight:700;font-size:64px;line-height:1;
+        color:var(--lime);text-shadow:0 0 18px rgba(212,255,0,.45);font-variant-numeric:tabular-nums}
+  .dg span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--dim)}
+
+  .season{display:flex;gap:3px;margin-top:22px}
+  .season i{flex:1;height:8px;background:#23262D}
+  .season i.d{background:#4A4E57}
+  .season i.l{background:var(--lime);box-shadow:0 0 6px var(--lime)}
+  .season i.x{background:var(--pink);box-shadow:0 0 6px var(--pink)}
+  .seasoncap{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
+             color:var(--dim);margin-top:8px;letter-spacing:.1em}
+
+  .tiles h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim);margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .tile{background:var(--panel);border:1px solid var(--line);padding:18px 18px 16px;
+        display:grid;grid-template-columns:1fr 150px;gap:14px;position:relative;
+        transition:border-color .15s}
+  a.tile:hover{border-color:var(--lime)}
+  .tile .hd{grid-column:1/-1;display:flex;justify-content:space-between;font-family:var(--mono);
+            font-size:11px;letter-spacing:.14em;color:var(--dim)}
+  .tile .hd b{color:var(--lime);font-weight:700}
+  .tile h3{font-family:var(--disp);font-size:30px;font-weight:700;letter-spacing:.04em;line-height:1}
+  .tile h3 small{display:block;font-family:var(--sans);font-size:13px;color:var(--dim);
+                 margin-top:6px;letter-spacing:0;font-weight:500}
+  .tile dl{margin-top:14px;font-family:var(--mono);font-size:12px;display:grid;
+           grid-template-columns:auto 1fr;gap:5px 14px}
+  .tile dt{color:var(--dim);letter-spacing:.1em}
+  .tile dd{text-align:right;font-weight:700}
+  .tile svg{width:150px;height:150px;align-self:center}
+  .tile path{fill:none;stroke:var(--lime);stroke-width:3;stroke-linejoin:round;
+             filter:drop-shadow(0 0 3px rgba(212,255,0,.7))}
+  .tile .go{grid-column:1/-1;font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--lime)}
+  .tile.nodata{border-style:dashed;border-color:rgba(255,46,136,.5);grid-template-columns:1fr}
+  .tile.nodata .hd b{color:var(--pink)}
+  .tile.nodata .nd{font-family:var(--mono);font-size:26px;color:var(--pink);letter-spacing:.14em;
+                   margin-top:16px}
+  .tile.nodata p{font-size:12.5px;color:var(--dim);margin-top:8px;line-height:1.7}
+
+  footer{font-family:var(--mono);font-size:10.5px;color:#4E525B;letter-spacing:.04em;line-height:1.7}
+
+  @media(max-width:900px){
+    .wrap{grid-template-columns:1fr}
+    .tower{order:2;border-right:0;border-top:1px solid var(--line)}
+    .main{padding:24px 18px}
+    .count h1{font-size:34px}
+    .dg{min-width:0;flex:1;padding:10px}
+    .dg b{font-size:38px}
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="logo">CIRCUIT<i>//</i>ANATOMY</span>
+  <span class="live">2026 SEASON</span>
+  <span class="sp"></span>
+  <span class="clk" id="clk"></span>
+</div>
+
+<div class="wrap">
+  <aside class="tower">
+    <h2><span>ROUND</span><span id="fin"></span></h2>
+    <div id="tower"></div>
+  </aside>
+
+  <main class="main">
+    <section class="count">
+      <div class="k" id="k"></div>
+      <h1 id="nx"></h1>
+      <div class="digits" id="digits"></div>
+      <div class="season" id="season"></div>
+      <div class="seasoncap"><span>R01</span><span id="prog"></span><span>R23</span></div>
+    </section>
+
+    <section class="tiles">
+      <h2>TRACK DATA ・ 已拆解的賽道</h2>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <footer>賽程來源 formula1.com。賽道輪廓取自 OpenStreetMap。速度與數據為模型推算。<br>
+      本站不使用任何賽事、車隊或車手的商標與影像。</footer>
+  </main>
+</div>
+
+<script type="module">
+import { rounds, built, next, doneCount, OUTLINES, METAS, STATS, countdown } from './shared.js';
+
+document.getElementById('fin').textContent = `${doneCount}/23 FIN`;
+
+document.getElementById('tower').innerHTML = rounds.map(r => {
+  const cls = ['tr', r.done ? 'done' : '', r.live ? 'open' : '', r.isNext ? 'next' : ''].join(' ');
+  const tag = r.live ? 'a' : 'div';
+  const href = r.live ? ` href="../${r.track}.html"` : '';
+  const s = r.live ? 'OPEN ▸' : r.isNext ? 'NEXT' : r.done ? 'FIN' : r.dot;
+  return `<${tag}${href} class="${cls}">
+    <span class="p">R${r.no}</span><span class="bar"></span>
+    <span class="c">${r.code}</span><span class="n">${r.flag} ${r.gp}</span><span class="s">${s}</span>
+  </${tag}>`;
+}).join('');
+
+document.getElementById('k').textContent = `NEXT SESSION ・ R${next.no} ・ ${next.dot}`;
+document.getElementById('nx').innerHTML = `${next.en} GP<small>${next.flag} ${next.circuit}</small>`;
+
+document.getElementById('season').innerHTML = rounds.map(r =>
+  `<i class="${r.isNext ? 'x' : r.live ? 'l' : r.done ? 'd' : ''}"></i>`).join('');
+document.getElementById('prog').textContent = `${doneCount} DONE ・ ${built.length} OPEN`;
+
+const pad = n => String(n).padStart(2, '0');
+function tick() {
+  const c = countdown();
+  document.getElementById('digits').innerHTML = [[c.d, 'DAYS'], [c.h, 'HRS'], [c.m, 'MIN'], [c.s, 'SEC']]
+    .map(([v, k]) => `<div class="dg"><b>${pad(v)}</b><span>${k}</span></div>`).join('');
+  document.getElementById('clk').textContent = new Date().toLocaleTimeString('en-GB');
+}
+tick();
+setInterval(tick, 1000);
+
+const tiles = built.map(r => {
+  const m = METAS[r.track];
+  return `<a class="tile" href="../${r.track}.html">
+    <div class="hd"><span>R${r.no} ・ ${r.code}</span><b>● OPEN</b></div>
+    <div>
+      <h3>${m.title.toUpperCase()}<small>${r.flag} ${m.tagline}</small></h3>
+      <dl>${STATS[r.track].map(([v, u, k]) => `<dt>${k}</dt><dd>${v} ${u}</dd>`).join('')}</dl>
+    </div>
+    <svg viewBox="0 0 100 100"><path d="${OUTLINES[r.track]}"/></svg>
+    <div class="go">ENTER TRACK ▸</div>
+  </a>`;
+});
+if (!next.live) {
+  tiles.push(`<div class="tile nodata">
+    <div class="hd"><span>R${next.no} ・ ${next.code}</span><b>● BUILDING</b></div>
+    <div><h3>${next.en}<small>${next.flag} ${next.circuit}</small></h3>
+      <div class="nd">NO DATA</div><p>下一站，賽道資料建置中。</p></div>
+  </div>`);
+}
+document.getElementById('grid').innerHTML = tiles.join('');
+</script>
+</body>
+</html>
