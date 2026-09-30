@@ -28,6 +28,15 @@
   .bar{position:relative;z-index:3;display:flex;justify-content:space-between;
        font-family:var(--display);font-size:15px;letter-spacing:.08em}
   .bar b{background:var(--ink);color:var(--red);padding:3px 9px;font-weight:400}
+  .bar-r{display:flex;gap:10px;align-items:center}
+  /* 遊戲入口：白底貼紙＋方格旗 */
+  .play{display:flex;align-items:center;gap:8px;background:var(--white);color:var(--ink);
+        padding:5px 12px 5px 8px;font-family:var(--sans);font-weight:900;font-size:14px;letter-spacing:.02em;
+        box-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg);transition:transform .15s,box-shadow .15s}
+  .play:hover{transform:rotate(0) translate(-1px,-1px);box-shadow:6px 6px 0 var(--ink);background:var(--yellow)}
+  .play i{width:22px;height:16px;background:
+    conic-gradient(var(--ink) 25%,var(--white) 0 50%,var(--ink) 0 75%,var(--white) 0) 0 0/11px 8px;
+    border:1.5px solid var(--ink)}
 
   .title{position:relative;z-index:3;margin-top:2vh;font-weight:900;
          font-size:clamp(72px,min(13vw,19vh),230px);line-height:.84;letter-spacing:-.05em;
@@ -239,7 +248,7 @@
 </head>
 <body>
 <section class="hero">
-  <div class="bar"><span>CIRCUIT ANATOMY</span><b id="bar-r">23 ROUNDS</b></div>
+  <div class="bar"><span>CIRCUIT ANATOMY</span><span class="bar-r"><a class="play" href="./drive.html"><i></i>PLAY 計時賽</a><b id="bar-r">23 ROUNDS</b></span></div>
   <h1 class="title"><span>賽道</span><span class="w">解剖</span></h1>
   <svg class="ghost" id="ghost" viewBox="0 0 100 100"></svg>
   <div class="season">2026</div>

@@ -109,9 +109,23 @@ h1 small em{display:table;font-family:var(--sans);font-style:normal;font-weight:
 #readout span{font-family:var(--display);font-size:12px;letter-spacing:.14em;color:#777}
 
 @media(max-width:860px){
-  #panel{width:100%;height:auto;max-height:46%;gap:12px;padding:16px 16px 12px;
-         border-right:0;border-bottom:1px solid var(--dim)}
+  /* 手機：一頁往下捲，不再切上下兩塊。順序：標題 → 數字 → 3D → 操作 → 剖面 → 彎角卡 */
+  html,body{height:auto}
+  body{overflow-x:hidden;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:28px}
+  #panel{display:contents}
+  #panel > div:first-child{order:1;padding:18px 16px 0}
   h1{font-size:34px}
-  #profile{left:16px;right:16px;bottom:12px;height:100px;padding-top:38px}
+  .facts{order:2;margin:14px 16px 0}
+  #stage{order:3;position:relative;height:50vh;min-height:300px;margin-top:10px;
+         border-top:1px solid var(--dim);border-bottom:1px solid var(--dim)}
+  .tools{display:contents}
+  .tools > *{order:4;margin:12px 16px 0}
+  .tools > .hint{order:7;margin-top:22px}         /* 資料來源說明放最後 */
+  .tools .row .btn{font-size:14px;padding:9px 14px}
+  #profile{order:5;position:relative;left:auto;right:auto;bottom:auto;margin:18px 16px 0;
+           height:120px;padding-top:38px;flex:none}
+  .cards{order:6;margin:22px 16px 0}
+  .tag{position:absolute}
   #hud{display:none}
 }
+.tag{position:absolute}

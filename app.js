@@ -95,10 +95,15 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0D0D0D);        // 黑舞台，跟首頁賽程區同色
 scene.fog = new THREE.Fog(0x0D0D0D, 3200, 9000);
 
-const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.4, 16000);
+// 桌機：#stage 滿版；手機：#stage 是長頁面中的一段，所以尺寸一律量 #stage
+const stageEl = document.getElementById('stage');
+const VW = () => stageEl.clientWidth || innerWidth;
+const VH = () => stageEl.clientHeight || innerHeight;
+const WIDE = () => innerWidth > 860;
+const camera = new THREE.PerspectiveCamera(48, VW() / VH(), 0.4, 16000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
+renderer.setSize(VW(), VH());
 document.getElementById('stage').appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -261,8 +266,9 @@ document.getElementById('facts').innerHTML = META.facts
   .map(f => `<div class="fact"><b>${f.v}</b><span>${f.k}</span></div>`).join('');
 document.getElementById('hint').textContent =
   '拖曳旋轉、滾輪縮放。' + META.hint + ' 非官方資訊，與任何賽事主辦單位無關。';
-document.getElementById('other').outerHTML = META.others
-  .map(o => `<a class="btn link" href="${o.href}">${o.label}</a>`).join('');
+document.getElementById('other').outerHTML =
+  `<a class="btn link" href="./drive.html?t=${ID}">駕駛計時賽</a>`
+  + META.others.map(o => `<a class="btn link" href="${o.href}">${o.label}</a>`).join('');
 
 // 速度模式加一條圖例
 if (SPEED_MODE) {
@@ -590,7 +596,7 @@ const tags = [];
     t.el = document.createElement('div');
     t.el.className = 'tag';
     t.el.textContent = t.text;
-    document.body.appendChild(t.el);
+    stageEl.appendChild(t.el);
   }
 })();
 
@@ -623,13 +629,13 @@ function frameOverview() {
     ry = Math.max(ry, Math.abs(p.dot(up)));
   }
   const tanV = Math.tan(camera.fov / 2 * Math.PI / 180);
-  const tanH = tanV * (innerWidth / innerHeight);
-  const wide = innerWidth > 860;
+  const tanH = tanV * (VW() / VH());
+  const wide = WIDE();
 
   // 面板與剖面圖擋掉的部分不算數，只把賽道塞進剩下的視窗矩形
   const box = wide
-    ? { x0: 356 / innerWidth, x1: 1, y0: 0, y1: (innerHeight - 132) / innerHeight }
-    : { x0: 0, x1: 1, y0: 0.47, y1: (innerHeight - 108) / innerHeight };
+    ? { x0: 356 / VW(), x1: 1, y0: 0, y1: (VH() - 132) / VH() }
+    : { x0: 0.02, x1: 0.98, y0: 0.04, y1: 0.96 };     // 手機：3D 自成一區，沒有東西蓋在上面
   const bw = box.x1 - box.x0, bh = box.y1 - box.y0;
   const fx = (box.x0 + box.x1) / 2, fy = (box.y0 + box.y1) / 2;
   let dist = Math.max(rx / (tanH * bw), ry / (tanV * bh)) * 1.08;
@@ -642,7 +648,7 @@ function frameOverview() {
   };
 
   // 透視會讓靠近相機的那一端放大，所以用真的投影再收斂幾次
-  const probe = new THREE.PerspectiveCamera(camera.fov, innerWidth / innerHeight, 1, 1e5);
+  const probe = new THREE.PerspectiveCamera(camera.fov, VW() / VH(), 1, 1e5);
   const v3 = new THREE.Vector3();
   let out = place(dist);
   for (let pass = 0; pass < 5; pass++) {
@@ -675,7 +681,7 @@ document.getElementById('reset').addEventListener('click', () => {
 const v = new THREE.Vector3();
 function project(p) {
   v.copy(p).project(camera);
-  return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight, z: v.z };
+  return { x: (v.x * 0.5 + 0.5) * VW(), y: (-v.y * 0.5 + 0.5) * VH(), z: v.z };
 }
 
 let needFrame = true;
@@ -685,10 +691,10 @@ function tick(now) {
 
   // 模組載入時視窗可能還沒有尺寸（top-level await 跑得比版面早），
   // 等到量得到尺寸的第一幀才取景。
-  if (needFrame && innerWidth > 0 && innerHeight > 0) {
-    camera.aspect = innerWidth / innerHeight;
+  if (needFrame && VW() > 0 && VH() > 0) {
+    camera.aspect = VW() / VH();
     camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(VW(), VH());
     const o = frameOverview();
     camera.position.copy(o.pos);
     controls.target.copy(o.target);
@@ -713,7 +719,7 @@ function tick(now) {
 
   for (const t of tags) {
     const s = project(pointAt(t.i, exag, 0, 6));
-    const clear = innerWidth > 860 ? s.x > 356 : s.y > innerHeight * 0.58;
+    const clear = WIDE() ? s.x > 356 : true;
     const on = s.z < 1 && !onboard && clear;
     t.el.style.opacity = on ? 1 : 0;
     if (on) { t.el.style.left = s.x + 'px'; t.el.style.top = s.y + 'px'; }
@@ -730,9 +736,9 @@ function tick(now) {
 }
 
 addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
+  camera.aspect = VW() / VH();
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(VW(), VH());
   drawProfile();
 });
 

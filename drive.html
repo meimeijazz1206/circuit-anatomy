@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>賽道解剖 — 計時賽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--red:#FF2B12;--yellow:#FFD60A;--ink:#0D0D0D;--white:#FFF;--grey:#8C8C8C;--dim:#2A2A2A;
+  --display:"Anton",Impact,sans-serif;--sans:"Noto Sans TC","Hiragino Sans",-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--white);font-family:var(--sans);overflow:hidden;
+     -webkit-font-smoothing:antialiased;touch-action:none;user-select:none}
+#stage{position:fixed;inset:0}canvas{display:block}
+.top{position:fixed;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;
+     align-items:flex-start;gap:12px;pointer-events:none}
+.top>*{pointer-events:auto}
+.title{font-weight:900;font-size:22px;transform:skewX(-9deg);line-height:1}
+.title small{display:block;font-family:var(--display);font-weight:400;font-size:12px;letter-spacing:.14em;
+             color:var(--yellow);margin-bottom:6px;transform:skewX(9deg)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn,select{font:700 13px var(--sans);color:var(--white);background:var(--ink);border:1px solid var(--white);
+            padding:7px 12px;cursor:pointer;border-radius:0}
+.btn:hover{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+#timing{position:fixed;left:16px;top:70px;display:grid;gap:10px;pointer-events:none}
+.t{background:var(--white);color:var(--ink);padding:8px 12px;box-shadow:4px 4px 0 #3A3A3A;min-width:150px}
+.t span{display:block;font-size:11px;font-weight:700;color:#666}
+.t b{font-family:var(--display);font-weight:400;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.t.best b{color:#0a7a2f}
+#delta{font-family:var(--display);font-size:26px;height:30px;font-variant-numeric:tabular-nums}
+#delta.up{color:var(--red)}#delta.down{color:#3CE07A}
+#speed{position:fixed;right:20px;bottom:22px;text-align:right;pointer-events:none}
+#speed b{font-family:var(--display);font-weight:400;font-size:84px;line-height:1;font-variant-numeric:tabular-nums}
+#speed span{display:block;font-family:var(--display);letter-spacing:.14em;color:var(--yellow);font-size:14px}
+#bars{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+#bars i{display:block;width:70px;height:8px;background:var(--dim)}
+#bars i b{display:block;height:100%;width:0;background:#3CE07A}
+#bars i:last-child b{background:var(--red)}
+#map{position:fixed;right:16px;top:64px;width:150px;height:150px;pointer-events:none}
+#msg{position:fixed;left:0;right:0;top:32%;text-align:center;font-family:var(--display);font-size:96px;
+     letter-spacing:.04em;pointer-events:none;text-shadow:0 4px 0 #000}
+#msg.small{font-size:30px;font-family:var(--sans);font-weight:900;top:24%}
+#turn{position:fixed;left:50%;top:70px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;
+      background:var(--white);color:var(--ink);padding:6px 16px 6px 12px;box-shadow:4px 4px 0 #3A3A3A;
+      pointer-events:none;transition:opacity .2s}
+#turn i{font-style:normal;font-size:40px;line-height:1;color:var(--red)}
+#turn b{font-family:var(--display);font-weight:400;font-size:34px;font-variant-numeric:tabular-nums}
+#turn span{font-weight:900;font-size:13px;line-height:1.3}
+#turn em{display:block;font-style:normal;color:var(--red)}
+#lights{position:fixed;left:50%;top:130px;transform:translateX(-50%);display:flex;gap:10px;padding:10px 14px;
+        background:#111;border:2px solid #333;pointer-events:none;transition:opacity .3s}
+#lights i{width:30px;height:30px;border-radius:50%;background:#2A0A08;box-shadow:inset 0 0 0 2px #000}
+#lights i.on{background:var(--red);box-shadow:0 0 18px var(--red)}
+#result{position:fixed;inset:0;display:grid;place-items:center;background:rgba(13,13,13,.72);z-index:5}
+#result[hidden]{display:none}
+#result .card{background:var(--white);color:var(--ink);padding:22px 26px;box-shadow:8px 8px 0 var(--red);min-width:300px}
+#result small{font-family:var(--display);letter-spacing:.16em;color:var(--red);font-size:14px}
+#result h2{font-weight:900;font-size:26px;transform:skewX(-9deg);margin:4px 0 14px}
+#result .tot span{display:block;font-size:12px;font-weight:700;color:#666}
+#result .tot b{font-family:var(--display);font-weight:400;font-size:48px;line-height:1.1;font-variant-numeric:tabular-nums}
+#result ol{list-style:none;margin:12px 0;border-top:1px solid #ddd}
+#result li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ddd;font-weight:700}
+#result li b{font-family:var(--display);font-weight:400;font-size:20px;font-variant-numeric:tabular-nums}
+#result li.f b{background:var(--yellow);padding:0 6px}
+#result p{font-size:13px;font-weight:700;margin-bottom:14px}
+#result .acts{display:flex;gap:8px}
+.btn.dark{background:var(--ink);color:var(--white);border-color:var(--ink);text-decoration:none}
+#pen{display:block;font-style:normal;font-size:12px;font-weight:900;color:var(--red)}
+#howto{position:fixed;left:50%;top:50%;transform:translate(-50%,-10%);background:var(--white);color:var(--ink);
+       padding:18px 22px;box-shadow:6px 6px 0 var(--yellow);display:grid;grid-template-columns:repeat(3,auto);
+       gap:10px 26px;align-items:center;pointer-events:none;z-index:3}
+#howto[hidden]{display:none}
+#howto .k{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:900;font-size:16px}
+#howto .k span{display:flex;gap:6px}
+#howto .k b{display:grid;place-items:center;min-width:44px;height:44px;border:2px solid var(--ink);
+            box-shadow:3px 3px 0 var(--ink);font-family:var(--display);font-weight:400;font-size:20px}
+#howto p{grid-column:1/4;font-size:13px;font-weight:700;line-height:1.7;border-top:2px solid var(--ink);padding-top:10px}
+#howto .tc{display:none}
+@media (pointer:coarse){#howto .k{display:none}#howto .tc{display:block;border-top:0;padding-top:0}}
+#howto b.s{border:1.5px solid var(--ink);padding:0 5px}
+#r-stamp{background:#FFF4C2;border-left:4px solid var(--red);padding:8px 10px;margin-bottom:14px;font-size:13px;font-weight:700}
+#r-stamp small{display:block;color:#555;font-weight:500;margin-top:2px}
+.medal{display:inline-block;margin-left:8px;padding:1px 8px;font-size:12px;font-weight:900;color:var(--ink)}
+#celebrate,#passport{position:fixed;inset:0;display:grid;place-items:center;background:rgba(13,13,13,.8);z-index:8;overflow:hidden}
+#celebrate[hidden],#passport[hidden]{display:none}
+#celebrate .card{background:var(--white);color:var(--ink);padding:26px 30px;text-align:center;
+                 box-shadow:8px 8px 0 var(--yellow);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+#c-medal{width:110px;height:110px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;
+         font-family:var(--display);font-size:46px;color:var(--ink);border:6px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+#celebrate h2{font-weight:900;font-size:28px;transform:skewX(-9deg)}
+#celebrate p{font-weight:700;font-size:14px;margin:8px 0 16px}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.bub{position:absolute;bottom:-10px;width:10px;height:10px;border-radius:50%;opacity:0;
+     animation:spray 2.6s ease-out forwards}
+@keyframes spray{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+#passport .card{background:var(--white);color:var(--ink);padding:20px 22px;box-shadow:8px 8px 0 var(--red);
+                width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto}
+#passport small{font-family:var(--display);letter-spacing:.16em;color:var(--red);font-size:14px}
+#passport h2{font-weight:900;font-size:26px;transform:skewX(-9deg);margin:2px 0 12px}
+#passport h2 span{font-family:var(--display);font-weight:400;color:#888;font-size:20px;margin-left:8px}
+#p-tiers{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+#p-tiers span{padding:5px 10px;border:2px dashed #BBB;color:#999;font-weight:900;font-size:13px}
+#p-tiers span small{font-family:var(--sans);letter-spacing:0;color:inherit;font-size:11px;margin-left:6px}
+#p-tiers span.got{background:var(--c);border:2px solid var(--ink);color:var(--ink)}
+#p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+#p-grid a{display:grid;grid-template-columns:22px 1fr;gap:2px 6px;padding:8px;border:2px solid #DDD;color:#999;text-decoration:none}
+#p-grid a.ok{border-color:var(--ink);color:var(--ink);background:#FFF4C2}
+#p-grid a:hover{border-color:var(--red)}
+#p-grid em{grid-row:1/3;font-style:normal;font-weight:900;color:var(--red);font-size:18px}
+#p-grid span{font-weight:900;font-size:13px}
+#p-grid b{font-family:var(--display);font-weight:400;font-size:13px}
+#passport .note{font-size:12px;color:#666;margin:12px 0}
+#touch{position:fixed;left:0;right:0;bottom:0;height:150px;display:none;justify-content:space-between;
+       padding:0 14px 14px;align-items:flex-end;pointer-events:none}
+#touch .g{display:flex;gap:10px;pointer-events:auto}
+#touch button{width:84px;height:84px;font:900 15px var(--sans);color:var(--white);background:#1c1c1cCC;
+              border:2px solid var(--white);border-radius:0}
+#touch button.on{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+#touch #brk.on{background:var(--red);color:var(--white);border-color:var(--red)}
+@media (pointer:coarse){#touch{display:flex}#speed{bottom:170px}}
+@media (max-width:700px){
+  .top{flex-direction:column;gap:8px}.title{font-size:18px}.btns{justify-content:flex-start}
+  .btn,select{padding:5px 9px;font-size:12px}
+  #turn{top:auto;bottom:250px}#timing{top:128px;left:16px;grid-template-columns:1fr 1fr;gap:6px;right:16px}
+  .t{min-width:0;padding:5px 8px;box-shadow:3px 3px 0 #3A3A3A}.t b{font-size:20px}.t span{font-size:10px}
+  #timing .t:nth-child(2),#timing .t:nth-child(3){display:none}#delta{grid-column:1/3;height:24px;font-size:20px}
+  #map{width:96px;height:96px;top:auto;bottom:170px;left:16px;right:auto}
+  #touch{display:flex}#speed{bottom:170px}#speed b{font-size:56px}
+  #msg{font-size:64px;top:36%}#howto{top:40%;grid-template-columns:repeat(3,auto);padding:12px 14px;gap:8px 14px}#howto .k b{min-width:36px;height:36px;font-size:16px}#howto p{font-size:12px}#msg.small{font-size:22px;top:30%}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+
+<div class="top">
+  <div class="title"><small>Time Attack</small><span id="title">—</span></div>
+  <div class="btns">
+    <select id="pick" aria-label="選擇賽道"></select>
+    <select id="laps" aria-label="圈數"><option value="1">1 圈</option><option value="3">3 圈</option><option value="5">5 圈</option></select>
+    <button class="btn" id="assist">輔助：新手</button>
+    <button class="btn" id="cam">視角：車載</button>
+    <button class="btn" id="restart">重新出發</button>
+    <button class="btn" id="pass">集章護照</button>
+    <button class="btn" id="help-btn" aria-label="操作說明">?</button>
+    <a class="btn" id="back" href="./index.html">首頁</a>
+  </div>
+</div>
+
+<div id="timing">
+  <div class="t"><span>本圈 LAP <em id="lapn" style="font-style:normal"></em></span><b id="cur">0:00.000</b></div>
+  <div class="t"><span>上一圈</span><b id="last">—</b></div>
+  <div class="t"><span>總時間</span><b id="total">0:00.000</b><em id="pen"></em></div>
+  <div class="t best"><span>最快（存在這台裝置）</span><b id="best">—</b></div>
+  <div id="delta"></div>
+</div>
+
+<svg id="map" viewBox="0 0 100 100"></svg>
+<div id="howto">
+  <div class="k"><span><b>↑</b><b>W</b></span>油門</div>
+  <div class="k"><span><b>↓</b><b>S</b></span>煞車</div>
+  <div class="k"><span><b>←</b><b>→</b></span>轉向</div>
+  <p class="tc">用下方按鈕操作：左邊 ◀ ▶ 轉向，右邊煞車、油門。</p>
+  <p>紅燈全部熄滅才出發，燈還亮著就踩油門＝搶跑罰 5 秒。<br>
+     新手輔助會自動煞車、幫忙轉彎；<b class="s">C</b> 切換視角、<b class="s">R</b> 重新出發。</p>
+</div>
+<div id="celebrate" hidden>
+  <div class="card"><div id="c-medal"></div><h2 id="c-title"></h2><p id="c-sub"></p>
+    <button class="btn dark" id="c-ok">好耶</button></div>
+</div>
+<div id="passport" hidden>
+  <div class="card">
+    <small>STAMP PASSPORT</small>
+    <h2>集章護照 <span id="p-count"></span></h2>
+    <div id="p-tiers"></div>
+    <div id="p-grid"></div>
+    <p class="note">每條賽道完賽一次就蓋章，存在這台裝置的瀏覽器；換裝置或清除網站資料會歸零。</p>
+    <button class="btn dark" id="p-close">關閉</button>
+  </div>
+</div>
+<div id="lights"><i></i><i></i><i></i><i></i><i></i></div>
+<div id="msg"></div>
+<div id="result" hidden>
+  <div class="card">
+    <small>FINISH</small>
+    <h2 id="r-title"></h2>
+    <div class="tot"><span>總時間</span><b id="r-total"></b></div>
+    <ol id="r-laps"></ol>
+    <p id="r-note"></p>
+    <div id="r-stamp"></div>
+    <div class="acts"><button class="btn dark" id="r-again">再跑一次</button><button class="btn dark" id="r-pass">集章護照</button><a class="btn dark" href="./index.html">回首頁</a></div>
+  </div>
+</div>
+<div id="turn"></div>
+<div id="speed"><b id="kmh">0</b><span>KM/H</span>
+  <div id="bars"><i><b id="thr"></b></i><i><b id="brkbar"></b></i></div></div>
+
+
+
+<div id="touch">
+  <div class="g"><button id="tl">◀</button><button id="tr">▶</button></div>
+  <div class="g"><button id="brk">煞車</button><button id="gas">油門</button></div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"./vendor/three.module.js"}}
+</script>
+<script type="module" src="./drive.js"></script>
+</body>
+</html>
