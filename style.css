@@ -112,6 +112,6 @@ h1 small em{display:table;font-family:var(--sans);font-style:normal;font-weight:
   #panel{width:100%;height:auto;max-height:46%;gap:12px;padding:16px 16px 12px;
          border-right:0;border-bottom:1px solid var(--dim)}
   h1{font-size:34px}
-  #profile{left:16px;right:16px;bottom:12px;height:86px}
+  #profile{left:16px;right:16px;bottom:12px;height:100px;padding-top:38px}
   #hud{display:none}
 }
