@@ -256,7 +256,7 @@
   <div class="bottom">
     <a class="sticker" id="sticker"></a>
     <div class="count">
-      <small>LIGHTS OUT IN ・ 距離下一站開賽</small>
+      <small id="count-cap">LIGHTS OUT IN ・ 距離下一站正賽</small>
       <div class="digits" id="digits"></div>
     </div>
   </div>
@@ -329,6 +329,9 @@ function tick() {
 }
 tick();
 setInterval(tick, 1000);
+// 週末已開跑（距正賽不到 3 天）就不是「下一站」了，直接寫正賽
+if (countdown().d < 3)
+  document.getElementById('count-cap').textContent = 'LIGHTS OUT IN ・ 距離正賽';
 
 const st = document.getElementById('sticker');
 st.innerHTML = `<small>NEXT RACE · R${next.no}</small>
