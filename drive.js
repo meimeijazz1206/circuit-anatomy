@@ -380,6 +380,7 @@ for (const [id, k] of [['tl', 'left'], ['tr', 'right'], ['brk', 'down'], ['gas',
   const b = $(id);
   const on = v => e => { e.preventDefault(); key[k] = v; b.classList.toggle('on', !!v); };
   b.addEventListener('pointerdown', on(1));
+  b.addEventListener('contextmenu', e => e.preventDefault());   // iOS 長按不跳選單／選字
   for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, on(0));
 }
 
@@ -752,7 +753,23 @@ function tick(now) {
   renderer.render(scene, camera);
 }
 
-addEventListener('resize', () => renderer.setSize(innerWidth, innerHeight));
+// 手機上把 HUD 由上往下依序排：按鈕列 → 計時 → 起跑燈 → 彎道提示 → 操作說明。
+// 按鈕列換行後高度不固定（LINE 內建瀏覽器字還會放大），寫死 top 會疊在一起，所以每次量實際高度再排
+function layoutHud() {
+  const ids = ['timing', 'lights', 'turn', 'howto'];
+  if (innerWidth > 700) { for (const id of ids) $(id).style.top = ''; return; }
+  let y = document.querySelector('.top').getBoundingClientRect().bottom + 10;
+  for (const id of ids) {
+    const el = $(id);
+    el.style.top = y + 'px';
+    const h = id === 'turn' ? 44 : el.getBoundingClientRect().height;   // 彎道提示內容會變，固定留位
+    y += h + 10;
+  }
+}
+addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); layoutHud(); });
+layoutHud();
+setTimeout(layoutHud, 600);                       // 字型載入後按鈕寬度會變，再排一次
+document.fonts && document.fonts.ready.then(layoutHud);
 requestAnimationFrame(tick);
 // 除錯用：不經渲染快轉物理，bot(state) 每步回傳按鍵
 window.__drive = { sim(sec, bot) { phase = 'run'; $('howto').hidden = true; setLights(0); let mx = 0; const dt = 0.008;
