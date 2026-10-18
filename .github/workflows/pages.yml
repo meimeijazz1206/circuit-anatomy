@@ -25,7 +25,7 @@ jobs:
         run: |
           mkdir _site
           cp *.html *.css *.js _site/
-          cp -r tracks vendor _site/
+          cp -r tracks vendor og _site/
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
